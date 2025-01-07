@@ -4,11 +4,14 @@ locals {
 }
 
 # Terraform Cloud production OpenID provider.
-resource "aws_iam_openid_connect_provider" "stacks" {
+/* resource "aws_iam_openid_connect_provider" "stacks" {
   url = "https://app.terraform.io"
 
   client_id_list  = [local.jwt_audience]
   thumbprint_list = ["9E99A48A9960B14926BB7F3B02E22DA2B0AB7280"]
+} */
+data "aws_iam_openid_connect_provider" "stacks" {
+  url = "https://app.terraform.io"
 }
 
 # This role is assumed by Terraform Cloud dynamic credentials, accepting any
@@ -22,7 +25,7 @@ resource "aws_iam_role" "stacks" {
         "Action" : "sts:AssumeRoleWithWebIdentity",
         "Effect" : "Allow",
         "Principal" : {
-          "Federated" = aws_iam_openid_connect_provider.stacks.arn,
+          "Federated" = data.aws_iam_openid_connect_provider.stacks.arn,
         },
         "Condition" : {
           "StringEquals" : {
